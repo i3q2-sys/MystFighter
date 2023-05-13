@@ -4,7 +4,6 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import threading
 import time
-from moviepy.editor import *
 
 WIDTH = 1280
 HEIGHT = 200
@@ -15,7 +14,7 @@ LINE_SPACING = 4
 MARGIN = 40
 MAX_LINES = 5
 MAX_CHARS_PER_LINE = 200
-offset = 380
+offset = 430
 
 smirk_words = ['smirk','smirks','smirking','smiles','smile','smiling', 'laughs', 'laugh']
 blush_words = ['blush','blushing','blushes','blushed']
@@ -92,10 +91,7 @@ def render():
 
         with lock:
             screen.blit(background, (0, 0))
-            screen.blit(characters[curr_emotion][frame_index], (character_x, character_y))
-            frame_index+=1
-            if frame_index >= len(characters[curr_emotion]):
-                frame_index = 0
+            screen.blit(characters[curr_emotion], (character_x, character_y))
             screen.blit(dialogue_square, (0,0))
 
             text_surfaces = render_text(dialogue)
@@ -136,23 +132,21 @@ sound = pygame.mixer.Sound('sound.mp3')
 # Create the Pygame window
 screen = pygame.display.set_mode((screen_width, screen_height))
 background = pygame.image.load("background.png").convert()
+note = pygame.image.load("info_scrap.png").convert_alpha()
 background = pygame.transform.scale(background, (screen_width, screen_height))
 menu = pygame.image.load("menu.png").convert()
 
-player_clip = VideoFileClip("character/Test.gif")
-player_frames = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
-
-characters = {'neutral': [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]}
-characters['annoyed'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
-characters['blush'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
-characters['confused'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
-characters['smirk'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
+characters = {'neutral': pygame.image.load("character/Character_neutral.png").convert_alpha()}
+characters['annoyed'] = pygame.image.load("character/Character_angry.png").convert_alpha()
+characters['blush'] = pygame.image.load("character/Character_blush.png").convert_alpha()
+characters['confused'] = pygame.image.load("character/Character_confused.png").convert_alpha()
+characters['smirk'] = pygame.image.load("character/Character_smirk.png").convert_alpha()
 
 
 dialogue_square = pygame.image.load("dialogue.png").convert_alpha()
-character_x = 700
+character_x = 350
 character_y = 0
-dialogue = "Hello, what's your name?"
+dialogue = "Hey there! I don't think I've seen that face before in this tavern, I would remember."
 response = ""
 font = pygame.font.Font("NotoSansHK-Regular.otf", FONT_SIZE)
 response_text = font.render(response, True, (255, 255, 255))
@@ -186,7 +180,7 @@ while i < 9:
     screen.blit(background, (0, 0))
 
     if (i == 3):
-
+        screen.blit(note, (300,200))
         i = i
 
     else:
