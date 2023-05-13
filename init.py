@@ -4,8 +4,7 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import threading
 import time
-import pyganim
-
+from moviepy.editor import *
 
 WIDTH = 1280
 HEIGHT = 200
@@ -85,6 +84,7 @@ def render():
     global response
     global curr_emotion
     global characters
+    global frame_index
     
     while True:
 
@@ -92,7 +92,10 @@ def render():
 
         with lock:
             screen.blit(background, (0, 0))
-            screen.blit(characters[curr_emotion], (character_x, character_y))
+            screen.blit(characters[curr_emotion][frame_index], (character_x, character_y))
+            frame_index+=1
+            if frame_index >= len(characters[curr_emotion]):
+                frame_index = 0
             screen.blit(dialogue_square, (0,0))
 
             text_surfaces = render_text(dialogue)
@@ -123,7 +126,7 @@ client = pyCAI(token)
 
 
 pygame.init()
-
+frame_index = 0
 # Define the screen dimensions
 screen_width = 1280
 screen_height = 720
@@ -136,15 +139,18 @@ background = pygame.image.load("background.png").convert()
 background = pygame.transform.scale(background, (screen_width, screen_height))
 menu = pygame.image.load("menu.png").convert()
 
-characters = {'neutral': pygame.image.load("character/Character_neutral.png").convert_alpha()}
-characters['annoyed'] = pygame.image.load("character/Character_angry.png").convert_alpha()
-characters['blush'] = pygame.image.load("character/Character_blush.png").convert_alpha()
-characters['confused'] = pygame.image.load("character/Character_confused.png").convert_alpha()
-characters['smirk'] = pygame.image.load("character/Character_smirk.png").convert_alpha()
+player_clip = VideoFileClip("character/Test.gif")
+player_frames = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
+
+characters = {'neutral': [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]}
+characters['annoyed'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
+characters['blush'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
+characters['confused'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
+characters['smirk'] = [pygame.image.frombuffer(frame.tostring(), (player_clip.w, player_clip.h), "RGB") for frame in player_clip.iter_frames()]
 
 
 dialogue_square = pygame.image.load("dialogue.png").convert_alpha()
-character_x = 960
+character_x = 700
 character_y = 0
 dialogue = "Hello, what's your name?"
 response = ""
@@ -213,7 +219,7 @@ while True:
     for event in pygame.event.get():
 
         if event.type == pygame.QUIT:
-            t.stop()
+            t._stop()
             pygame.quit()
             sys.exit()
     
@@ -235,6 +241,7 @@ while True:
                 curr_emotion = emotion_guesser(dialogue)
                 print(curr_emotion)
                 dialogue = "Koldoan: " + dialogue
+                frame_index = 0
 
 
 # Quit Pygame
