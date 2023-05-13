@@ -23,6 +23,7 @@ confused_words = ['confused', 'confusion', 'what?', 'confused']
 
 curr_emotion = 'neutral'
 
+
 lock = threading.Lock()
 
 
@@ -136,11 +137,11 @@ note = pygame.image.load("info_scrap.png").convert_alpha()
 background = pygame.transform.scale(background, (screen_width, screen_height))
 menu = pygame.image.load("menu.png").convert()
 
-characters = {'neutral': pygame.image.load("character/Character_neutral.png").convert_alpha()}
-characters['annoyed'] = pygame.image.load("character/Character_angry.png").convert_alpha()
-characters['blush'] = pygame.image.load("character/Character_blush.png").convert_alpha()
-characters['confused'] = pygame.image.load("character/Character_confused.png").convert_alpha()
-characters['smirk'] = pygame.image.load("character/Character_smirk.png").convert_alpha()
+characters = {'neutral': pygame.image.load("steel/Character_neutral.png").convert_alpha()}
+characters['annoyed'] = pygame.image.load("steel/Character_angry.png").convert_alpha()
+characters['blush'] = pygame.image.load("steel/Character_blush.png").convert_alpha()
+characters['confused'] = pygame.image.load("steel/Character_confused.png").convert_alpha()
+characters['smirk'] = pygame.image.load("steel/Character_smirk.png").convert_alpha()
 
 
 dialogue_square = pygame.image.load("dialogue.png").convert_alpha()
