@@ -4,6 +4,10 @@ import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import threading
 import time
+from moviepy.editor import *
+import imageio
+import os
+
 
 WIDTH = 1280
 HEIGHT = 200
@@ -18,7 +22,7 @@ offset = 430
 
 smirk_words = ['smirk','smirks','smirking','smiles','smile','smiling', 'laughs', 'laugh']
 blush_words = ['blush','blushing','blushes','blushed']
-annoyed_words = ['frowns', 'angry', 'screams', 'scream', 'hate', 'menacing', 'mad', 'sword', 'dagger', 'knife', 'stabs']
+annoyed_words = ['frowns', 'angry', 'screams', 'scream', 'hate', 'menacing', 'mad', 'sword', 'dagger', 'knife', 'stabs', 'rage', 'aggresive', 'angrily']
 confused_words = ['confused', 'confusion', 'what?', 'confused']
 
 curr_emotion = 'neutral'
@@ -26,6 +30,13 @@ curr_emotion = 'neutral'
 
 lock = threading.Lock()
 
+def load_frames(emotion):
+    file_count = len(os.listdir("./steel/"+emotion+"/"))
+    print(file_count)
+    frames = []
+    for i in range(file_count):
+        frames.append(pygame.image.load("./steel/"+emotion+"/" + str(i) + ".png").convert_alpha())
+    return frames
 
 # split text into lines
 def split_lines(text):
@@ -92,7 +103,10 @@ def render():
 
         with lock:
             screen.blit(background, (0, 0))
-            screen.blit(characters[curr_emotion], (character_x, character_y))
+            screen.blit(characters[curr_emotion][frame_index], (character_x, character_y))
+            frame_index+=1
+            if frame_index >= len(characters[curr_emotion]):
+                frame_index = 0
             screen.blit(dialogue_square, (0,0))
 
             text_surfaces = render_text(dialogue)
@@ -121,6 +135,7 @@ token = '3bacec01844a43fd5e72089cfa8ea2cedb38335b'
 character_id = 'nqAvzK4hFInlT_4CF9hbKPKMSsQgpAKTMuS3-Pduz-0'
 client = pyCAI(token)
 
+frame_index = 0
 
 pygame.init()
 frame_index = 0
@@ -128,7 +143,7 @@ frame_index = 0
 screen_width = 1280
 screen_height = 720
 
-sound = pygame.mixer.Sound('sound.mp3')
+#sound = pygame.mixer.Sound('sound.mp3')
 
 # Create the Pygame window
 screen = pygame.display.set_mode((screen_width, screen_height))
@@ -137,12 +152,11 @@ note = pygame.image.load("info_scrap.png").convert_alpha()
 background = pygame.transform.scale(background, (screen_width, screen_height))
 menu = pygame.image.load("menu.png").convert()
 
-characters = {'neutral': pygame.image.load("steel/Character_neutral.png").convert_alpha()}
-characters['annoyed'] = pygame.image.load("steel/Character_angry.png").convert_alpha()
-characters['blush'] = pygame.image.load("steel/Character_blush.png").convert_alpha()
-characters['confused'] = pygame.image.load("steel/Character_confused.png").convert_alpha()
-characters['smirk'] = pygame.image.load("steel/Character_smirk.png").convert_alpha()
-
+characters = {'neutral': load_frames("neutral")}
+characters['annoyed'] = load_frames("annoyed")
+characters['confused'] = load_frames("neutral")
+characters['smirk'] = load_frames("smirk")
+characters['blush'] = load_frames("smirk")
 
 dialogue_square = pygame.image.load("dialogue.png").convert_alpha()
 character_x = 350
@@ -203,7 +217,7 @@ while i < 9:
             i = i + 1
     pygame.display.flip()
 
-sound.play(loops=-1)
+#sound.play(loops=-1)
 
 t = threading.Thread(target=render)
 t.start()
